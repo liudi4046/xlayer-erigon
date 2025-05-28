@@ -211,7 +211,6 @@ func attemptAddTransaction(
 	effectiveGasPrice uint8,
 	l1Recovery bool,
 	forkId, l1InfoIndex uint64,
-	blockDataSizeChecker *BlockDataChecker,
 	ethBlockGasPool *core.GasPool,
 ) (*types.Receipt, *core.ExecutionResult, overflowType, error) {
 	// Batch data size checking removed along with counters
