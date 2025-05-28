@@ -885,7 +885,6 @@ BatchLoop:
 			block.Time(),               // blockTime
 			-1,                         // transactionType
 		)
-		// Counter collection removed
 
 		utils.LogTrace(
 			"",                                // txhash
@@ -897,12 +896,6 @@ BatchLoop:
 			block.Time(),                      // blockTime
 			-1,                                // transactionType
 		)
-
-		// Write block directly to datastream without verification
-		if err := streamWriter.WriteBlockToDatastream(blockNumber, batchState.batchNumber, batchState.forkId); err != nil {
-			log.Error(fmt.Sprintf("[%s] Failed to write block %d to datastream", logPrefix, blockNumber), "error", err)
-			return err
-		}
 
 		// For X Layer, local replay and smt alignment's feature of stateroot mismatch detection
 		if cfg.zk.XLayer.SequencerReplay || shouldCheckForExecutionAndSMTAlignment == SMTAlignmentPendingResequence {
@@ -918,8 +911,11 @@ BatchLoop:
 			}
 		}
 
-		// check for new responses from the verifier
-		needsUnwind, err := updateStreamAndCheckRollback(batchContext, batchState, streamWriter, u, s)
+		// Write block directly to datastream without verification
+		if err := streamWriter.WriteBlockToDatastream(blockNumber, batchState.batchNumber, batchState.forkId); err != nil {
+			log.Error(fmt.Sprintf("[%s] Failed to write block %d to datastream", logPrefix, blockNumber), "error", err)
+			return err
+		}
 
 		// lets commit everything after updateStreamAndCheckRollback no matter of its result unless
 		// we're in L1 recovery where losing some blocks on restart doesn't matter
@@ -934,10 +930,6 @@ BatchLoop:
 			metrics.GetLogStatistics().CumulativeTiming(metrics.BatchCommitDBTiming, time.Since(commitTime))
 		}
 
-		// check the return values of updateStreamAndCheckRollback
-		if err != nil || needsUnwind {
-			return err
-		}
 		if _, err := rawdb.IncrementStateVersionByBlockNumberIfNeeded(batchContext.sdb.tx, block.NumberU64()); err != nil {
 			return fmt.Errorf("writing plain state version: %w", err)
 		}

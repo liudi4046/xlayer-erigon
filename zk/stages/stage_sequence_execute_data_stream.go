@@ -34,11 +34,6 @@ func newSequencerBatchStreamWriter(batchContext *BatchContext, batchState *Batch
 	}
 }
 
-func (sbc *SequencerBatchStreamWriter) CommitNewUpdates() error {
-	// Direct datastream writing without verification
-	return nil
-}
-
 func (sbc *SequencerBatchStreamWriter) WriteBlockToDatastream(blockNumber uint64, batchNumber uint64, forkId uint64) error {
 	// Write block directly to datastream without verification
 	previousBlock, err := rawdb.ReadBlockByNumber(sbc.sdb.tx, blockNumber-1)

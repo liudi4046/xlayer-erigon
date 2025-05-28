@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/ledgerwatch/erigon/core/rawdb"
-	"github.com/ledgerwatch/erigon/eth/stagedsync"
 	"github.com/ledgerwatch/erigon/eth/stagedsync/stages"
 	"github.com/ledgerwatch/erigon/zk/l1_data"
 	"github.com/ledgerwatch/log/v3"
@@ -78,21 +77,3 @@ func writeBadBatchDetails(batchContext *BatchContext, batchState *BatchState, bl
 	}
 	return nil
 }
-
-func updateStreamAndCheckRollback(
-	batchContext *BatchContext,
-	batchState *BatchState,
-	streamWriter *SequencerBatchStreamWriter,
-	u stagedsync.Unwinder,
-	s *stagedsync.StageState,
-) (bool, error) {
-	err := streamWriter.CommitNewUpdates()
-	if err != nil {
-		return false, err
-	}
-
-	// Legacy verifier bundle processing removed
-	return false, nil
-}
-
-// markForUnwind function removed as it depends on legacy verifier
