@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - dev
+      - dev-pp
       - zkevm
       - stable/**
       - feature/v0.6.0
